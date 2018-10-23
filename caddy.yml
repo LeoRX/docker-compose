@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  caddy:
+    container_name: caddy
+    image: leorx/caddy-docker:php-no-stats
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /mnt/LaCie-8TB/caddy-data/Caddyfile:/etc/Caddyfile
+      - /mnt/LaCie-8TB/caddy-srv:/srv
+      - /mnt/LaCie-8TB/caddy-data:/root/.caddy
+      - /mnt/LaCie-8TB/caddy-certs:/etc/caddycerts
+      - /etc/localtime:/etc/localtime
+      - maxmind-data:/data:ro
+    command: --conf /etc/Caddyfile --log stdout --agree=$ACME_AGREE
+    environment:
+      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - ACME_AGREE='false'
+      - CLOUDFLARE_EMAIL=''
+      - CLOUDFLARE_API_KEY=''
+    labels:
+      caddy_version: "0.11.0"
+      maintainer: "Abiola Ibrahim <abiola89@gmail.com>"
+    restart: always
+    hostname: caddy
+    networks:
+      - default
+
+networks:
+  default:
+    external:
+      name: docker        

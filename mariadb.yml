@@ -1,0 +1,65 @@
+version: '2'
+services:
+  db:
+    container_name: mariadb
+    image: mariadb:latest
+    ports:
+      - "3306:3306"
+#      - "4567-4568:4567-4568"
+#      - "4567:4567/udp"
+#      - "4444:4444"
+    command: mysqld
+    entrypoint: docker-entrypoint.sh
+    volumes:
+      - mariadb:/var/lib/mysql
+      - /etc/localtime:/etc/localtime
+      - mariadb-conf:/etc/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=Biffy123
+      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - GOSU_VERSION=1.10
+      - GPG_KEYS=199369E5404BD5FC7D2FE43BCBCB082A1BB943DB 430BDF5C56E7C94E848EE60C1C4CBDCDCD2EFD2A 4D1BB29D63D98E422B2113B19334A25F8507EFA5
+      - MARIADB_MAJOR=10.3
+      - MARIADB_VERSION=1:10.3.8+maria~jessie
+    hostname: mariadb
+    restart: always
+    networks:
+      - net
+  web:
+    container_name: myadmin
+    image: phpmyadmin/phpmyadmin:latest
+    depends_on:
+      - db
+    ports:
+      - "8801:80"
+    command: supervisord -n
+    entrypoint: /run.sh
+    working_dir: /var/www/html
+    environment:
+      - PMA_HOSTS=mariadb
+      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - PHPIZE_DEPS=autoconf dpkg-dev dpkg file g++ gcc libc-dev make pkgconf re2c
+      - PHP_INI_DIR=/usr/local/etc/php
+      - PHP_EXTRA_CONFIGURE_ARGS=--enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --disable-cgi
+      - PHP_CFLAGS=-fstack-protector-strong -fpic -fpie -O2
+      - PHP_CPPFLAGS=-fstack-protector-strong -fpic -fpie -O2
+      - PHP_LDFLAGS=-Wl,-O1 -Wl,--hash-style=both -pie
+      - GPG_KEYS=1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F
+      - PHP_VERSION=7.2.6
+      - PHP_URL=https://secure.php.net/get/php-7.2.6.tar.xz/from/this/mirror
+      - PHP_ASC_URL=https://secure.php.net/get/php-7.2.6.tar.xz.asc/from/this/mirror
+      - PHP_SHA256=1f004e049788a3effc89ef417f06a6cf704c95ae2a718b2175185f2983381ae7
+      - VERSION=4.8.2
+      - URL=https://files.phpmyadmin.net/phpMyAdmin/4.8.2/phpMyAdmin-4.8.2-all-languages.tar.xz
+      - PHP_MD5=
+    hostname: phpmyadmin
+    restart: always
+    labels:
+      - "version=4.8.2"
+    networks:
+      - net
+ 
+networks:
+  net:
+    external:
+      name: docker

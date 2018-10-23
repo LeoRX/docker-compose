@@ -1,0 +1,26 @@
+version: '2'
+services:
+  web:
+    container_name: gogs
+    image: gogs/gogs:latest
+    ports:
+      - "10022:22"
+      - "3000:3000"
+    command: ['/bin/s6-svscan', '/app/gogs/docker/s6/']
+    working_dir: /app/gogs
+    entrypoint: /app/gogs/docker/start.sh
+    volumes:
+      - /etc/timezone:/etc/timezone
+      - /mnt/LaCie-8TB/gogs-data:/data
+
+    environment:
+      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - GOGS_CUSTOM=/data/gogs
+    hostname: gogs
+    restart: always
+    networks:
+      - net
+networks:
+  net:
+    external:
+      name: docker
