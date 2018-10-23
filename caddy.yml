@@ -14,10 +14,10 @@ services:
       - /mnt/LaCie-8TB/caddy-certs:/etc/caddycerts
       - /etc/localtime:/etc/localtime
       - maxmind-data:/data:ro
-    command: --conf /etc/Caddyfile --log stdout --agree=$ACME_AGREE
+    command: --conf /etc/Caddyfile --log stdout --agree=true
     environment:
       - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      - ACME_AGREE='false'
+      #- ACME_AGREE='false'
       - CLOUDFLARE_EMAIL=''
       - CLOUDFLARE_API_KEY=''
     labels:
